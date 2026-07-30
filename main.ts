@@ -5,6 +5,11 @@ input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
         basic.turnRgbLedOff()
     }
 })
+function uhr_stellen () {
+    if (pins.keypadConnected()) {
+        pins.oled_write_text(3, 0, 5, pins.rtc_set_key(pins.keypad_read()))
+    }
+}
 function raw_angle () {
     bu = pins.pins_i2cWriteReadBuffer(pins.pins_i2cAdressen(pins.ei2cAdressen.AS5600), pins.buffer_fromArray([12]), 2)
     if (bu) {
@@ -13,12 +18,20 @@ function raw_angle () {
         return 0
     }
 }
-let blink = false
+function blinken () {
+    blink = !(blink)
+    if (blink) {
+        basic.setLedColor(0x00ff00)
+    } else {
+        basic.setLedColor(0x0000ff)
+    }
+}
 let current_speed = 0
 let speed = 0
 let differenz = 0
 let rotary_4096 = 0
 let minute_4096 = 0
+let blink = false
 let bu: Buffer = null
 let motor_on = false
 motor_on = false
@@ -28,9 +41,11 @@ pins.oled_write_text(0, 0, 15, pins.pins_text("Magnetic Rotary"))
 pins.oled_write_text(1, 0, 15, pins.pins_text("Position Sensor"))
 pins.oled_write_text(4, 0, 5, pins.pins_text("minute"))
 pins.oled_write_text(5, 0, 5, pins.pins_text("rotary"))
+pins.oled_write_text(7, 0, 5, pins.pins_text("speed"))
 let go = true
 basic.forever(function () {
     if (go) {
+        uhr_stellen()
         pins.rtc_read()
         pins.zeigeText(pins.rtc_get_string(pins.rtc_eFormat.hhmm))
         pins.oled_write_text(2, 2, 15, pins.pins_text(pins.rtc_get_string(pins.rtc_eFormat.yyMMddHHmmss)))
@@ -43,14 +58,11 @@ basic.forever(function () {
         if (Math.abs(differenz) >= 5) {
             if (differenz < 0) {
                 speed = -100
-                basic.setLedColor(0x0000ff)
             } else {
                 speed = 100
-                basic.setLedColor(0x00ff00)
             }
         } else {
             speed = 0
-            basic.setLedColor(0xff0000)
         }
         pins.oled_write_text(7, 7, 10, current_speed, pins.oled_align.right)
         pins.oled_write_text(7, 12, 15, speed, pins.oled_align.right)
@@ -58,7 +70,7 @@ basic.forever(function () {
             current_speed = speed
             motors.motorPower(speed)
         }
-        blink = !(blink)
+        blinken()
         if (speed == 0) {
             basic.pause(1000)
         } else {
