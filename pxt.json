@@ -1,5 +1,6 @@
 {
     "name": "AS5600_Uhr",
+    "version": "0.0.1",
     "description": "",
     "dependencies": {
         "core": "*",
