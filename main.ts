@@ -1,3 +1,10 @@
+function GitHub () {
+    pins.comment(pins.pins_text("calliope-net/as5600_uhr"))
+    pins.comment(pins.pins_text("3 Module: 4-Digit I2C: AS5600 Rotary, RTC, OLED"))
+    pins.comment(pins.pins_text("optional: I2C Keypad zum Uhr stellen"))
+    pins.comment(pins.pins_text("1 Erweiterung calliope-net/pins"))
+    pins.comment(pins.pins_text("darin sind alle Module enthalten"))
+}
 input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
     motor_on = !(motor_on)
     if (!(motor_on)) {
@@ -11,6 +18,7 @@ function uhr_stellen () {
     }
 }
 input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
+    pins.comment(pins.pins_text("Status Register anzeigen"))
     if (go) {
         go = false
         basic.pause(2000)
@@ -29,6 +37,7 @@ input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
     }
 })
 function raw_angle () {
+    pins.comment(pins.pins_text("Register 0x0C RAW ANGLE lesen: 0..4095"))
     bu = pins.pins_i2cWriteReadBuffer(pins.pins_i2cAdressen(pins.ei2cAdressen.AS5600), pins.buffer_fromArray([12]), 2)
     if (bu) {
         return pins.buffer_getNumber(bu, NumberFormat.UInt16BE, 0)
