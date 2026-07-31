@@ -4,6 +4,7 @@ function GitHub () {
     pins.comment(pins.pins_text("optional: I2C Keypad zum Uhr stellen"))
     pins.comment(pins.pins_text("1 Erweiterung calliope-net/pins"))
     pins.comment(pins.pins_text("darin sind alle Module enthalten"))
+    pins.comment(pins.pins_text("https://files.seeedstudio.com/wiki/Grove-12-bit-Magnetic-Rotary-Position-Sensor-AS5600/res/Magnetic%20Rotary%20Position%20Sensor%20AS5600%20Datasheet.pdf"))
 }
 input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
     motor_on = !(motor_on)
