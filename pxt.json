@@ -4,7 +4,7 @@
     "description": "",
     "dependencies": {
         "core": "*",
-        "pins": "github:calliope-net/pins#v1.5.14"
+        "pins": "github:calliope-net/pins#v1.5.15"
     },
     "files": [
         "main.blocks",
