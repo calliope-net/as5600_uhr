@@ -91,12 +91,10 @@ basic.forever(function () {
         pins.oled_write_text(5, 7, 15, rotary_4096)
         differenz = pins.minx(minute_4096, rotary_4096)
         pins.oled_write_text(6, 7, 15, pins.roundWithPrecision(differenz, 1))
-        if (Math.abs(differenz) >= 5) {
-            if (differenz < 0) {
-                speed = -100
-            } else {
-                speed = 100
-            }
+        if (Math.abs(differenz) >= 40) {
+            speed = pins.iif(differenz < 0, -100, 100)
+        } else if (Math.abs(differenz) >= 5) {
+            speed = pins.iif(differenz < 0, -80, 80)
         } else {
             speed = 0
         }
@@ -110,7 +108,7 @@ basic.forever(function () {
         if (speed == 0) {
             basic.pause(1000)
         } else {
-            basic.pause(500)
+            basic.pause(200)
         }
     }
 })
