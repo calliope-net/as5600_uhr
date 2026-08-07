@@ -19,7 +19,6 @@ function uhr_stellen () {
     }
 }
 input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
-    pins.comment(pins.pins_text("Status Register anzeigen"))
     if (go) {
         go = false
         basic.pause(2000)
@@ -38,7 +37,6 @@ input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
     }
 })
 function raw_angle () {
-    pins.comment(pins.pins_text("Register 0x0C RAW ANGLE lesen: 0..4095"))
     bu = pins.pins_i2cWriteReadBuffer(pins.pins_i2cAdressen(pins.ei2cAdressen.AS5600), pins.buffer_fromArray([12]), 2)
     if (bu) {
         return pins.buffer_getNumber(bu, NumberFormat.UInt16BE, 0)
@@ -46,6 +44,9 @@ function raw_angle () {
         return 0
     }
 }
+input.onButtonEvent(Button.A, ButtonEvent.Hold, function () {
+    korrektur += -5
+})
 function blinken () {
     blink = !(blink)
     if (blink) {
@@ -58,12 +59,16 @@ function blinken () {
         basic.setLedColor(0x0000ff)
     }
 }
+input.onButtonEvent(Button.B, ButtonEvent.Hold, function () {
+    korrektur += 5
+})
 let current_speed = 0
 let speed = 0
 let differenz = 0
 let rotary_4096 = 0
 let minute_4096 = 0
 let blink = false
+let korrektur = 0
 let bu: Buffer = null
 let motor_on = false
 let go = false
@@ -89,8 +94,10 @@ basic.forever(function () {
         pins.oled_write_text(4, 7, 15, pins.roundWithPrecision(minute_4096, 1))
         rotary_4096 = raw_angle()
         pins.oled_write_text(5, 7, 15, rotary_4096)
-        differenz = pins.minx(minute_4096, rotary_4096)
-        pins.oled_write_text(6, 7, 15, pins.roundWithPrecision(differenz, 1))
+        differenz = pins.roundWithPrecision(pins.minx(minute_4096, rotary_4096), 1)
+        differenz += korrektur
+        pins.oled_write_text(6, 7, 15, differenz)
+        pins.oled_write_text(6, 0, 5, korrektur, pins.oled_align.right)
         if (Math.abs(differenz) >= 40) {
             speed = pins.iif(differenz < 0, -100, 100)
         } else if (Math.abs(differenz) >= 5) {
